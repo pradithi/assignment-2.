@@ -1,0 +1,39 @@
+`include "intf.sv"
+`include "driver.sv"
+`include "monitor.sv"
+
+module tb_adder;
+    adder_if adder_if();
+
+    Driver drv;
+    Monitor mon;
+
+    adder dut (
+        .a(adder_if.a),
+        .b(adder_if.b),
+        .cin(adder_if.cin),
+        .sum(adder_if.sum),
+        .cout(adder_if.cout)
+    );
+
+    initial begin
+        $dumpfile("dump.vcd");
+        $dumpvars(0, tb_adder);
+    end
+
+    initial begin
+        drv = new(adder_if);
+        mon = new(adder_if);
+
+        drv.drive(0, 0, 0); #1; mon.monitor_output();
+        drv.drive(0, 0, 1); #1; mon.monitor_output();
+        drv.drive(0, 1, 0); #1; mon.monitor_output();
+        drv.drive(0, 1, 1); #1; mon.monitor_output();
+        drv.drive(1, 0, 0); #1; mon.monitor_output();
+        drv.drive(1, 0, 1); #1; mon.monitor_output();
+        drv.drive(1, 1, 0); #1; mon.monitor_output();
+        drv.drive(1, 1, 1); #1; mon.monitor_output();
+
+        $finish;
+    end
+endmodule
